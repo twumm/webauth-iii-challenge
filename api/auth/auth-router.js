@@ -2,7 +2,7 @@ const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 
 const Users = require('../users/users-model');
-const { hashPassword, reversePasswordHash } = require('../middlewares/auth-middleware');
+const { hashPassword, reversePasswordHash, generateToken } = require('../middlewares/auth-middleware');
 const { validateUserData } = require('../middlewares/user-middleware');
 const secret = 'some long and safe secret';
 
@@ -22,6 +22,30 @@ router.post('/register', [validateUserData, hashPassword], async (req, res, next
       .json(newUser)
   } catch (error) {
     next(new Error('Could not register user. Please try again.'));
+  }
+});
+
+router.post('/login', [validateUserData, reversePasswordHash], async (req, res, next) => {
+  try {
+    if (req.user) {
+      const token = await generateToken(req.user);
+      req.session.token = token;
+      
+      res
+        .status(200)
+        .json({
+          user: {
+            id: req.user.id,
+            username: req.user.username,
+            department: req.user.department,
+          },
+          token
+        });
+    } else {
+      next(new Error("You are not authorised"));
+    }
+  } catch (error) {
+    next(new Error('Login failed miserably. Kindly try again'));
   }
 });
 
