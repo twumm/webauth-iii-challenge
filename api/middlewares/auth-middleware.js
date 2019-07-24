@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const User = require('../users/users-model');
 
@@ -31,7 +32,21 @@ async function reversePasswordHash(req, res, next) {
   }
 }
 
+function generateToken(user) {
+  const payload = {
+    sub: user.id,
+    username: user.username,
+  };
+
+  const options = {
+    expiresIn: '1d'
+  };
+
+  return jwt.sign(payload, 'secret', options);
+}
+
 module.exports = {
   hashPassword,
   reversePasswordHash,
+  generateToken,
 };
