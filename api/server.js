@@ -3,11 +3,13 @@ const cors = require('cors');
 const helmet = require('helmet');
 
 const server = express();
+const authRouter = require('./auth/auth-router');
 
 server.use(helmet());
 server.use(express.json());
 server.use(cors());
 server.use(logger);
+server.use('/auth', authRouter);
 
 server.get('/', (req, res, next) => {
   try {
