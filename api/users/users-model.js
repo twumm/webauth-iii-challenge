@@ -16,14 +16,14 @@ function getAllUsers() {
 
 function findBy(filter) {
   return db('users')
-    .where(filter)
-    .select('id', 'username', 'department');
+    .where(filter);
 }
 
 function findById(id) {
   return db('users')
     .where({ id })
-    .first();
+    .first()
+    .select('id', 'username', 'department');
 }
 
 async function addUser(user) {
