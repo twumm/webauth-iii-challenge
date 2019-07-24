@@ -1,8 +1,8 @@
 import React from 'react'
 
 const SignIn = () => {
-  const username = React.createRef();
-  const password = React.createRef();
+  const usernameRef = React.createRef();
+  const passwordRef = React.createRef();
 
   return (
     <div>
@@ -10,12 +10,16 @@ const SignIn = () => {
         <input
           type='text'
           placeholder='username'
-          value={username}
+          ref={usernameRef}
         />
         <input
           type='password'
           placeholder='password'
-          value={password}
+          ref={passwordRef}
+        />
+        <input
+          type='submit'
+          value='Sign In'
         />
       </form>
     </div>
