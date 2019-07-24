@@ -29,7 +29,6 @@ router.post('/login', [validateUserData, reversePasswordHash], async (req, res, 
   try {
     if (req.user) {
       const token = await generateToken(req.user);
-      req.session.token = token;
       
       res
         .status(200)
