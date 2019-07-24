@@ -7,6 +7,7 @@ const server = express();
 server.use(helmet());
 server.use(express.json());
 server.use(cors());
+server.use(logger);
 
 server.get('/', (req, res, next) => {
   try {
@@ -17,5 +18,24 @@ server.get('/', (req, res, next) => {
       next(new Error('Server not available'));
   }
 });
+
+function logger(req, res, next) {
+  console.log(
+    `[${new Date().toString()}] ${req.method} request from ${req.url}`
+  );
+  next();
+}
+
+function errorHandler(error, req, res) {
+  console.log('ERROR', error);
+  res
+    .status(500)
+    .json({
+      message: error.message,
+      stack: error.stack
+    });
+}
+
+server.use(errorHandler);
 
 module.exports = server;
