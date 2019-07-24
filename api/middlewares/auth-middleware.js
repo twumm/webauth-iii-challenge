@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const User = require('../users/users-model');
+const { jwtSecret } = require('../config/secret');
 
 async function hashPassword(req, res, next) {
   const { password } = req.body;
@@ -42,11 +43,29 @@ function generateToken(user) {
     expiresIn: '1d'
   };
 
-  return jwt.sign(payload, 'secret', options);
+  return jwt.sign(payload, jwtSecret, options);
+}
+
+function restricted(req, res, next) {
+  const tokenInAuthHeader = req.headers.authorization;
+
+  if (tokenInAuthHeader) {
+    jwt.verify(tokenInAuthHeader, jwtSecret, (error, decodedToken) => {
+      if (error) {
+        res
+          .status(401)
+          .json({ message: "You shall not pass" });
+      } else {
+        req.decodedToken = decodedToken;
+        next();
+      }
+    });
+  }
 }
 
 module.exports = {
   hashPassword,
   reversePasswordHash,
   generateToken,
+  restricted,
 };
